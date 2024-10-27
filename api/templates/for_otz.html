@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Отзывы о тренере</title>
+    <style>
+      body {
+        font-family: "Arial", sans-serif;
+        background-color: #f1daeb;
+        margin: 0;
+        padding: 0;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: 30px auto;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+
+      h1 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 20px;
+      }
+
+      .reviews {
+        margin-bottom: 30px;
+      }
+
+      .review {
+        padding: 15px;
+        margin-bottom: 15px;
+        background-color: #f9f9f9;
+        border-left: 5px solid #c894ba;
+        border-radius: 4px;
+      }
+
+      .review .name {
+        font-weight: bold;
+        color: #c894ba;
+        margin-bottom: 5px;
+      }
+
+      .review .text {
+        color: #555;
+      }
+
+      .review-form {
+        margin-top: 30px;
+      }
+
+      .review-form input[type="text"],
+      .review-form textarea {
+        width: 95%;
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+
+      .review-form button {
+        padding: 10px 15px;
+        background-color: #c894ba;
+        border: none;
+        border-radius: 4px;
+        color: #fff;
+        font-size: 16px;
+        cursor: pointer;
+      }
+
+      .review-form button:hover {
+        background-color: #bd6aa7;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Отзывы о тренере {{ coach.name }}</h1>
+
+      <div class="reviews" id="reviews">
+          {% for feedback in coach_feedback %}
+          	<div class="review">
+              <div class="name">{{ feedback.client_name }}</div>
+              <div class="text">
+                {{ feedback.body }}
+              </div>
+            </div>
+          {% endfor %}
+      </div>
+
+      <div class="review-form">
+        <h2>Оставить свой отзыв</h2>
+        <input type="text" id="reviewerName" placeholder="Ваше имя" />
+        <textarea id="reviewText" rows="4" placeholder="Ваш отзыв"></textarea>
+        <button id="submitReview">Оставить отзыв</button>
+      </div>
+    </div>
+
+    <script>
+      document.getElementById("submitReview").addEventListener("click", function() {
+          var name = document.getElementById("reviewerName").value;
+          var text = document.getElementById("reviewText").value;
+
+          if (name === "" || text === "") {
+            alert("Пожалуйста, заполните все поля.");
+            return;
+          }
+
+          // Используем AJAX для отправки данных на сервер
+          var xhr = new XMLHttpRequest();
+          xhr.open("POST", "/feedback/{{ coach.id }}", true);
+          xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+          xhr.onload = function () {
+            if (xhr.status >= 200 && xhr.status < 400) {
+              // Успешный ответ от сервера
+              // Обновляем блок с отзывами
+                const reviewSection = document.getElementById("reviews");
+
+                // Парсим ответ сервера как JSON
+                const newFeedback = JSON.parse(xhr.responseText);
+
+                // Создаем новый элемент отзыва
+                const newReview = document.createElement("div");
+                newReview.classList.add("review");
+
+                const nameDiv = document.createElement("div");
+                nameDiv.classList.add("name");
+                nameDiv.textContent = newFeedback.client_name;
+
+                const textDiv = document.createElement("div");
+                textDiv.classList.add("text");
+                textDiv.textContent = newFeedback.body;
+
+                newReview.appendChild(nameDiv);
+                newReview.appendChild(textDiv);
+
+                // Добавляем новый отзыв в блок отзывов
+                reviewSection.appendChild(newReview);
+
+                // Очищаем форму
+                document.getElementById("reviewerName").value = "";
+                document.getElementById("reviewText").value = "";
+
+                alert("Спасибо за ваш отзыв!");
+            } else {
+              // Обработка ошибок
+              console.error("Ошибка при отправке отзыва:", xhr.statusText);
+            }
+          };
+          xhr.onerror = function () {
+            console.error("Ошибка при отправке отзыва:", xhr.statusText);
+          };
+          xhr.send("name=" + encodeURIComponent(name) + "&text=" + encodeURIComponent(text));
+        });
+    </script>
+
+  </body>
+</html>

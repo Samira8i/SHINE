@@ -1,0 +1,8 @@
+asgiref==3.8.1
+Django==5.1.1
+Jinja2==3.1.4
+MarkupSafe==2.1.5
+pillow==10.4.0
+psycopg2==2.9.9
+sqlparse==0.5.1
+typing_extensions==4.12.2
