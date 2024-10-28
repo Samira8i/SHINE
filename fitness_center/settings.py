@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 import os.path
 from pathlib import Path
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -81,16 +82,18 @@ WSGI_APPLICATION = 'fitness_center.wsgi.application'
 #         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
+# DATABASES = {
+# 'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': 'finess_center',
+#         'USER': 'postgres',
+#         'PASSWORD': '21181924',
+#         'HOST': 'localhost',
+#         'PORT': '',
+# }}
 DATABASES = {
-'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'finess_center',
-        'USER': 'postgres',
-        'PASSWORD': '21181924',
-        'HOST': 'localhost',
-        'PORT': '',
-}}
-
+    'default': dj_database_url.parse(os.environ.get("DATABASE_URL"))
+}
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
@@ -137,3 +140,5 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
